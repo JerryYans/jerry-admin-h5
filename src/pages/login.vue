@@ -29,7 +29,7 @@
               </div>
             </div>
           </el-col>
-          <el-col :span="24" :xs="24" :sm="8" :md="8" :lg="8">
+          <!-- <el-col :span="24" :xs="24" :sm="8" :md="8" :lg="8">
             <div class="login-register">
               <div class="card-block">
                 <h2>注册</h2>
@@ -37,7 +37,7 @@
                 <el-button type="info" class="btn btn-primary active m-t-1"> 马上注册</el-button>
               </div>
             </div>
-          </el-col>
+          </el-col>-->
         </el-row>
       </div>
     </el-col>
@@ -45,7 +45,8 @@
 </template>
 
 <script>
-  import auth from '../common/auth'
+  import * as adminApi from '../services/adminApi'
+  import {mapMutations} from 'vuex'
 
   export default {
     data() {
@@ -58,12 +59,26 @@
     },
     components: {},
     methods: {
+      ...mapMutations([
+        'setUserInfo',
+        'loadMenu'
+      ]),
       login(){
         let redirectUrl = '/index';
-        auth.login("fertgee")
-        this.loginSuccess(redirectUrl)
+        adminApi.login(this.form).then(res => {
+          this.loginSuccess({...res.data, redirectUrl})
+        })
       },
-      loginSuccess(redirectUrl){
+
+      loginSuccess({adminToken, user, redirectUrl}){
+        user.avatar = user.avatar || "./static/img/noavatar.jpeg"
+        window.localStorage.setItem("user-info", JSON.stringify(user));
+        window.localStorage.setItem('admin-token',adminToken);
+        this.setUserInfo(user);
+        adminApi.menuList().then(res => {
+          console.info(res.data.content)
+          this.loadMenu(res.data.content)
+        }).catch(err=>{})
         this.$router.push({path: redirectUrl});
       }
     }

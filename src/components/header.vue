@@ -1,23 +1,93 @@
 <template>
-  <header class="main-header animated">
+  <header class="main-header animated" :class="{closeLogo:sidebar.collapsed,mobileLogo:device.isMobile}">
     <a href="#" class="logo">
       <span class="logo-lg"><i class="fa fa-diamond"></i>&nbsp; <b>Vue-Admin</b></span>
     </a>
     <nav class="navbar">
-      top nav
+      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"
+         @click.stop.prevent="toggleMenu(!sidebar.collapsed,device.isMobile)">
+      </a>
+      <div class="navbar-custom-menu">
+        <!-- -->
+        <el-dropdown trigger="click" class="navbar-dropdown">
+          <span class="el-dropdown-link">
+            <img :src='userInfo.avatar' style="width: 25px;height: 25px;border-radius: 50%; vertical-align: middle;" alt="U"> {{userInfo.nickname}}
+          </span>
+          <el-dropdown-menu style="padding: 0px" slot="dropdown">
+            <div>
+              <div class="header-pic">
+                <img :src='userInfo.avatar' class="img-circle" alt="User Image" >
+                <p>{{userInfo.nickname}}</p>
+              </div>
+              <div class="pull-left">
+                <router-link :to="{ path: '/resetPwd' }">
+                  <el-button type="default">修改密码</el-button>
+                </router-link>
+              </div>
+              <div class="pull-right">
+                <el-button type="default" @click="logout">退出</el-button>
+              </div>
+            </div>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </nav>
   </header>
 </template>
 <script>
+  import {mapGetters, mapMutations} from 'vuex'
+  import auth from '../common/auth'
+
   export default {
     data(){
       return {
-        showMessageBox: false,
         showProfileBox: false,
         list: [],
         count: 4,
         show:true,
       }
+    },
+    computed: {
+      ...mapGetters({
+         sidebar: 'sidebar',
+         userInfo: 'userInfo',
+         device:'device',
+       })
+    },
+    methods: {
+      toggleMenu(collapsed,isMobile){
+        if(isMobile){
+          this.toggleSidebarShow();
+        }else{
+          this.toggleSidebar();
+        }
+      },
+      logout(){
+        auth.logout();
+        this.$http.defaults.headers.common['authSid'] = '';
+        this.$router.push({path: '/login'});
+      },
+      ...mapMutations({
+        toggleSidebar : 'toggleSidebar',
+        toggleSidebarShow: 'toggleSidebarShow',
+        setUserInfo: 'setUserInfo'
+      }),
+      toggleProfile(){
+        this.showProfileBox = !this.showProfileBox;
+      },
+      autoHide(evt) {
+        if (!this.$el.querySelector('li.user-menu').contains(evt.target)) {
+          this.showProfileBox = false
+        }
+      }
+    },
+    created(){
+      let userInfo = window.localStorage.getItem("user-info");
+      if (!!userInfo){
+        this.setUserInfo(JSON.parse(userInfo));
+      }
+      this.count = 0;
+      this.list = [];
     },
   }
 </script>
@@ -99,7 +169,6 @@
     margin-left: 0;
   }
 
-
   body.hold-transition .main-header .navbar,
   body.hold-transition .main-header .logo {
     -webkit-transition: none;
@@ -161,6 +230,7 @@
 
   .navbar-custom-menu{
     float: right;
+    margin-top: 12px;
   }
 
   .navbar-custom-menu .el-dropdown-link{
@@ -177,23 +247,6 @@
   .navbar-custom-menu .el-dropdown-link:hover{
     background: #f9f9f9;
   }
-  .message-list {
-    list-style: none;
-    padding: 0 10px;
-  }
-  .message-list li{
-    list-style: none;
-    height: 25px;
-    line-height: 25px;
-  }
-  .message-list li a{
-    text-decoration: none;
-    color: #666666;
-  }
-  .message-list li:hover{
-    background-color: #f9f9f9;
-  }
-
   .el-dropdown-menu .header-pic{
     text-align: center;
     background-color: #108ee9;

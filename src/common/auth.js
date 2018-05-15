@@ -1,4 +1,6 @@
 import { randomString } from  './utils'
+import axios from "../common/axios"
+import * as apiConfig from '../config/apiConfig'
 
 export default {
   getUid:function(){
@@ -16,8 +18,11 @@ export default {
     }
     return '';
   },
-  login (token, callback) {
-    window.localStorage.setItem('admin-token',token);
+  login (params, callback) {
+    axios.post(apiConfig.LOGIN, { params }).then(res => {
+      return res.data;
+    }).catch((error) => {
+     });
     if (callback) callback();
   },
 

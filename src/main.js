@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VueProgressBar from "vue-progressbar";
+import store from "./store";
 import frame from './frame'
 import Element from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css'
@@ -16,6 +17,7 @@ Vue.use(Element);
 Vue.http = axios;
 Vue.axios = axios;
 Vue.use(axios);
+
 
 //设置进度条
 Vue.use(VueProgressBar, {
@@ -33,6 +35,7 @@ Vue.use(VueProgressBar, {
 
 /* eslint-disable no-new */
 new Vue({
+  store,
   router,
   render: h=>h(frame)
 }).$mount("#app")

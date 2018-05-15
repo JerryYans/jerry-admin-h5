@@ -1,9 +1,9 @@
 <template>
-  <aside class="main-sidebar animated">
+  <aside class="main-sidebar animated" :class="{ showSlide: sidebar.show, hideSlide: !sidebar.show, expandSide:(!sidebar.collapsed||device.isMobile)}">
     <div class="sidebar">
       <el-menu :default-active="onRoutes"
                class="el-menu-style"
-               theme="light" router >
+               theme="light" router :collapse="sidebar.collapsed&&!device.isMobile" @select="handleSelect">
         <template v-for="item in menuList">
           <sub-menu :param="item"></sub-menu>
         </template>
@@ -13,34 +13,72 @@
 </template>
 <script>
   import subMenu from "./subMenu.vue"
-  import defaultData from '../services/default'
+  import {mapGetters, mapActions, mapMutations} from 'vuex'
 
   export default {
     props: {
       show: Boolean,
     },
     data() {
-      return {
-        menuList : defaultData.menuList
-      }
+      return {}
     },
     components: {
       subMenu,
     },
+    computed: {
+      ...mapGetters([
+        'sidebar',
+        'device',
+        'menuList'
+      ]),
+      onRoutes(){
+        return this.$route.path;
+      },
+      onRouteKeys(){
+        const getParentArray = (path, ms, kas = []) => {
+          if (ms && ms.length > 0) {
+            for (let k = 0, length = ms.length; k < length; k++) {
+              if (path == ms[k].href) {
+                kas.push(ms[k].href);
+                break;
+              }
+              let i = kas.length;
+              if (ms[k].children && ms[k].children.length > 0) {
+                getParentArray(path, ms[k].children, kas);
+              }
+              if (i < kas.length) {
+                kas.push(ms[k].href);
+              }
+            }
+          }
+          return kas.reverse();
+        }
+        return getParentArray(this.$route.path, this.menuList);
+      }
+    },
     mounted () {
-      let route = this.$route
+      // let route = this.$route
     },
     created: function () {
-      this.loadMenuList();
+      //this.load();
     },
     methods: {
-      loadMenuList(){
-        this.menuList  = defaultData.menuList;
-      }
+      handleSelect() {
+        if(this.device.isMobile){
+          this.toggleSidebarShow(false);
+        }
+      },
+      ...mapMutations({
+        toggleSidebarShow: 'toggleSidebarShow',
+      }),
+      ...mapActions({
+        //load: 'loadMenuList' // 映射 this.load() 为 this.$store.dispatch('loadMenuList')
+      })
     }
   }
 </script>
 <style>
+
   .showSlide {
     animation-duration: .2s;
     animation-name: slideInLeft;
