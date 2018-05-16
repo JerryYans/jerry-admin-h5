@@ -8,6 +8,7 @@ import frame from './frame'
 import Element from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from "./common/axios";
+import ImpPanel from "./components/panel.vue";
 
 import router from './router'
 
@@ -18,6 +19,7 @@ Vue.http = axios;
 Vue.axios = axios;
 Vue.use(axios);
 
+Vue.component(ImpPanel.name, ImpPanel);
 
 //设置进度条
 Vue.use(VueProgressBar, {

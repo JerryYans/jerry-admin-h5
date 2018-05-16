@@ -29,15 +29,6 @@
               </div>
             </div>
           </el-col>
-          <!-- <el-col :span="24" :xs="24" :sm="8" :md="8" :lg="8">
-            <div class="login-register">
-              <div class="card-block">
-                <h2>注册</h2>
-                <p>平台暂时只支持使用公司邮箱注册.</p>
-                <el-button type="info" class="btn btn-primary active m-t-1"> 马上注册</el-button>
-              </div>
-            </div>
-          </el-col>-->
         </el-row>
       </div>
     </el-col>
@@ -86,7 +77,7 @@
 </script>
 
 
-<style>
+<style scoped>
   .login {
     margin-top: 160px;
     width: 100%;
@@ -196,24 +187,5 @@
   .login .login-form .card-block .row {
     display: block;
     margin: 15px 0;
-  }
-
-  .login .login-register {
-    width: 100%;
-    height: 100%;
-    display: block;
-    background-color: #20a8d8;
-    color: #fff;
-  }
-
-  .login .login-register .card-block {
-    text-align: center !important;
-    padding: 30px;
-  }
-
-  .login .login-register .card-block p {
-    text-align: left !important;
-    margin: 15px 0;
-    height: 100px;
   }
 </style>

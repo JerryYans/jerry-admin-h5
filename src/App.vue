@@ -22,11 +22,12 @@
 </template>
 
 <script>
-  import 'animate.css'
+
   import {mapGetters, mapActions,mapMutations} from 'vuex'
   import appHeader from './components/header'
   import appFooter from './components/footer'
   import sideMenu from './components/sideMenu.vue'
+  import 'animate.css'
 
   export default {
     name: 'App',

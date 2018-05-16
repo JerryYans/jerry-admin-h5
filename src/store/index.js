@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
 import defaultValue from "../services/default";
 
 Vue.use(Vuex)
@@ -21,6 +22,7 @@ const store = new Vuex.Store({
     },
     currentMenus:[]
   },
+  plugins:[createPersistedState()],
   getters: {
     loading: state => state.loading,
     menuList: state => state.menuList,
