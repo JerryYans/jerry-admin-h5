@@ -6,7 +6,7 @@ import VueProgressBar from "vue-progressbar";
 import store from "./store";
 import frame from './frame'
 import Element from "element-ui"
-import 'element-ui/lib/theme-chalk/index.css'
+import 'element-ui/lib/theme-default/index.css'
 import axios from "./common/axios";
 import ImpPanel from "./components/panel.vue";
 
@@ -14,7 +14,7 @@ import router from './router'
 
 Vue.config.productionTip = false;
 Vue.use(VueResource);
-Vue.use(Element);
+Vue.use(Element, {size:'large'});
 Vue.http = axios;
 Vue.axios = axios;
 Vue.use(axios);

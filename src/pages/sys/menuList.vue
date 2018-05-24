@@ -5,29 +5,30 @@
       <el-button type="danger" icon="delete" @click="batchDelete">删除</el-button>
     </h3>
     <el-row slot="body" :gutter="24" style="margin-bottom: 20px;">
-      <el-col :span="6" :xs="24" :sm="24" :md="6" :lg="6" style="margin-bottom: 20px;">
+      <el-col :span="6" :xs="24" :sm="24" :md="6" :lg="6" style="margin-bottom: 20px">
         <el-tree v-if="menuTree"
                  ref="menuTree"
                  :data="menuTree"
                  show-checkbox
                  highlight-current
+                 default-expand-all
                  :render-content="renderContent"
                  @node-click="handleNodeClick" clearable node-key="id" :props="defaultProps"></el-tree>
       </el-col>
       <el-col :span="18" :xs="24" :sm="24" :md="18" :lg="18">
         <el-card class="box-card">
           <div class="text item">
-            <el-form :model="form" ref="form">
+            <el-form :model="form" ref="form" :rules="rules">
               <el-form-item label="父级" :label-width="formLabelWidth">
                 <!--<el-input v-model="form.parentId" auto-complete="off"></el-input>-->
                 <el-select-tree v-model="form.parentId" :treeData="menuTree" :propNames="defaultProps" clearable
                                 placeholder="请选择父级">
                 </el-select-tree>
               </el-form-item>
-              <el-form-item label="名称" :label-width="formLabelWidth">
+              <el-form-item label="名称" :label-width="formLabelWidth" prop="name" >
                 <el-input v-model="form.name" auto-complete="off"></el-input>
               </el-form-item>
-              <el-form-item label="链接" :label-width="formLabelWidth">
+              <el-form-item label="链接" :label-width="formLabelWidth" prop="href">
                 <el-input v-model="form.href" auto-complete="off"></el-input>
               </el-form-item>
               <el-form-item label="是否显示" :label-width="formLabelWidth">
@@ -96,10 +97,17 @@
           sort: 0,
           icon: '',
           href: '',
-          isShow: '',
-          delivery: false,
+          isShow: "1",
           parentId: null,
           desc: ''
+        },
+        rules: {
+          name: [
+            { required: true, message: '请输入名称' }
+          ],
+          href:[
+            {required: true, message:'请输入链接'}
+          ]
         }
       }
     },
@@ -124,7 +132,6 @@
           icon: '',
           href: '',
           isShow: '',
-          delivery: false,
           parentId: null,
           desc: ''
         }
@@ -165,43 +172,42 @@
       handleNodeClick (data) {
         this.form = merge({}, data)
       },
+
       onSubmit () {
-        if (this.form.id == null) {
-          this.$http.post(api.SYS_MENU_ADD, this.form)
-            .then(res => {
-              this.$message('操作成功')
-              this.form.id = res.data.id
-              this.appendTreeNode(this.menuTree, res.data)
-            }).catch(e => {
-            this.maxId += 1
-            this.$message('操作成功')
-            this.form.id = this.maxId
-            var ddd = {
-              id: this.form.id,
-              name: this.form.name,
-              sort: this.form.sort,
-              icon: this.form.icon,
-              href: this.form.href,
-              isShow: this.form.isShow,
-              delivery: this.form.delivery,
-              parentId: this.form.parentId,
-              desc: this.form.desc,
-              children: []
+        this.$refs['form'].validate((valid) => {
+          if (valid){
+            if (this.form.id == null) {
+              this.$http.post(api.SYS_MENU_ADD, this.form)
+                .then(res => {
+                  if (res.data.code == 0){
+                    this.$message('操作成功')
+                    this.form.id = res.data.id
+                    this.appendTreeNode(this.menuTree, res.data.data)
+                  }else {
+                    this.$message('操作失败;'+res.data.message)
+                  }
+                }).catch(e => {
+                this.$message('操作失败')
+              })
+            } else {
+              this.$http.post(api.SYS_MENU_UPDATE, this.form)
+                .then(res => {
+                  if (res.data.code == 0){
+                    this.$message('操作成功')
+                    this.form.id = res.data.id
+                    this.updateTreeNode(this.menuTree, res.data.data)
+                  }else {
+                    this.$message('操作失败;'+res.data.message)
+                  }
+                }).catch(e => {
+                this.$message('操作失败')
+              })
             }
-            this.appendTreeNode(this.menuTree, ddd)
-            this.menuTree.push({})
-            this.menuTree.pop()
-          })
-        } else {
-          this.$http.post(api.SYS_MENU_UPDATE, this.form)
-            .then(res => {
-              this.$message('操作成功')
-              this.updateTreeNode(this.menuTree, res.data)
-            }).catch(e => {
-            this.$message('操作成功')
-            this.updateTreeNode(this.menuTree, merge({}, this.form))
-          })
-        }
+          } else {
+            console.info("false")
+            return false
+          }
+        })
       },
       load () {
         sysApi.menuList().then(res => {
@@ -214,5 +220,3 @@
     }
   }
 </script>
-
-

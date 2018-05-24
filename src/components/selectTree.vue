@@ -69,7 +69,6 @@
   import {addClass, removeClass, hasClass} from 'element-ui/src/utils/dom';
   import {addResizeListener, removeResizeListener} from 'element-ui/src/utils/resize-event';
   import {t} from 'element-ui/src/locale';
-  import merge from 'element-ui/src/utils/merge';
   import treeter from "../common/treeter"
 
   const sizeMap = {
@@ -234,7 +233,7 @@
             this.$refs.tree.setCheckedKeys(ids);
             this.selected = this.$refs.tree.getCheckedNodes();
           } else {
-            this.selected = this.findFromTree(this.treeData, ids, this.propNames.id, this.propNames.children);
+            this.selected = this.findNodeFromTree(this.treeData, ids, this.propNames.id, this.propNames.children);
             this.selectedLabel = !!this.selected ? this.selected[this.propNames.label] : '';
           }
         } else {
